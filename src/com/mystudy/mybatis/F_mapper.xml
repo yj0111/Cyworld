@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="friend"> <!-- 루트태그 -->
+
+	<select id="getAll" parameterType="int" resultType="FriendVO">
+	
+		SELECT A.FRIEND_CODE, A.USER_CODE2, A.REGDATE, A.FRIEND_NAME, U.NAME 
+		FROM (SELECT * FROM FRIEND WHERE USER_CODE1 = #{userCode }) A INNER JOIN USERS U
+		ON A.USER_CODE2 = U.USER_CODE
+		ORDER BY FRIEND_CODE
+	</select>
+	
+	<select id="getAllByName" parameterType="Map" resultType="FriendVO">
+		
+		SELECT A.FRIEND_CODE, A.USER_CODE2, A.REGDATE, A.FRIEND_NAME, U.NAME 
+		FROM (SELECT * FROM FRIEND WHERE USER_CODE1 = #{userCode }) A INNER JOIN USERS U
+		ON A.USER_CODE2 = U.USER_CODE
+		WHERE U.NAME LIKE '%'||#{name }||'%'
+		ORDER BY FRIEND_CODE
+	</select>
+	
+	
+	<select id="getUsersByName" parameterType="Map" resultType="UserVO">
+		
+		SELECT USER_CODE, ID, NAME, BIRTH FROM USERS
+		WHERE NAME LIKE '%'||#{text }||'%'
+		AND BIRTH LIKE '%'||#{birth }||'%'
+		AND GENDER LIKE '%'||#{gender }||'%'
+		AND NOT USER_CODE = #{userCode }
+		ORDER BY NAME, BIRTH DESC
+	</select>
+	
+	<select id="getUsersById" parameterType="Map" resultType="UserVO">
+		
+		SELECT USER_CODE, ID, NAME, BIRTH FROM USERS
+		WHERE ID LIKE '%'||#{text }||'%'
+		AND BIRTH LIKE '%'||#{birth }||'%'
+		AND GENDER LIKE '%'||#{gender }||'%'
+		AND NOT USER_CODE = #{userCode }
+		ORDER BY NAME, BIRTH DESC
+	</select>
+	
+	
+	<select id="requestList" parameterType="int" resultType="FriendRequestVO">
+		
+		SELECT F.REQUEST_CODE, F.USER_CODE1 AS REQUESTER_CODE, U.USER_CODE, (SELECT ID FROM USERS WHERE USER_CODE = F.USER_CODE1) AS ID, (SELECT NAME FROM USERS WHERE USER_CODE = F.USER_CODE1) AS NAME, F.MESSAGE, F.CHECKED 
+		FROM USERS U, FRIEND_REQUEST F
+		WHERE U.USER_CODE = F.USER_CODE2
+		    AND F.USER_CODE2 = #{userCode }
+		
+	</select>
+	
+	
+	<select id="checkFriend" resultType="int" parameterType="map">
+		SELECT COUNT(FRIEND_CODE) FROM FRIEND WHERE USER_CODE1 = #{userCode }
+												AND USER_CODE2 = #{visitHost }
+	</select>
+	
+	
+	<insert id="insertRequest" parameterType="Map"> 
+		INSERT INTO FRIEND_REQUEST (
+			REQUEST_CODE, USER_CODE1, USER_CODE2, CHECKED, MESSAGE
+		) VALUES (
+			REQUEST_SEQ.NEXTVAL, #{myCode }, #{opponentCode }, 0, #{message }
+		)
+	</insert>
+	
+	
+	<insert id="insertFriend" parameterType="Map">
+		INSERT INTO FRIEND (
+			FRIEND_CODE, USER_CODE1, USER_CODE2, REGDATE, FRIEND_NAME
+		) VALUES (
+			FRIEND_SEQ.NEXTVAL, #{userCode }, #{requesterCode }, SYSDATE, '일촌'
+		)
+	</insert>
+	
+	<update id="updateFriendName" parameterType="Map">
+		UPDATE FRIEND SET FRIEND_NAME = #{text } WHERE FRIEND_CODE = #{friendCode }
+	</update>
+	
+	
+	<delete id="deleteRequest" parameterType="int">
+		DELETE FROM FRIEND_REQUEST WHERE REQUEST_CODE = #{requestCode }
+	</delete>
+	
+	
+	<delete id="deleteFriend" parameterType="Map">
+		DELETE FROM FRIEND WHERE USER_CODE1 = #{userCode } AND USER_CODE2 = #{opponentCode }
+	</delete>
+	
+	
+	
+	<select id="viewFriendComm" parameterType="int" resultType="FriendCommVO">
+		SELECT * FROM FRIEND_COMMENT
+		WHERE USER_CODE = #{visitHost}
+		ORDER BY REGDATE DESC
+	</select>
+	
+	<insert id="wrtFriendComm" parameterType="FriendCommVO">
+		INSERT INTO FRIEND_COMMENT 
+		VALUES (NVL((SELECT MAX(FRIEND_COMM_CODE) FROM FRIEND_COMMENT), 0) + 1,
+           		 #{userCode} , #{guestCode}, #{content}, SYSDATE, 
+            	(SELECT NAME FROM USERS WHERE USER_CODE = #{guestCode}), 
+            	(SELECT FRIEND_NAME FROM FRIEND WHERE USER_CODE1 = #{userCode }  AND USER_CODE2 = #{guestCode})
+        	   )
+	</insert>
+	
+	<delete id="delFriendComm" parameterType="int" >
+		DELETE 
+		FROM FRIEND_COMMENT
+		WHERE FRIEND_COMM_CODE = #{friendCommCode}
+	</delete>
+	
+
+</mapper>

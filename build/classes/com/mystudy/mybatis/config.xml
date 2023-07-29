@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  
+  <settings>
+  	<setting name="jdbcTypeForNull" value="NULL"/>
+  	<setting name="mapUnderscoreToCamelCase" value="true"/>
+  </settings>
+  
+  <typeAliases>
+	<typeAlias alias="ImageFileVO" type="com.mystudy.vo.ImageFileVO" />
+	<typeAlias alias="ProfileVO" type="com.mystudy.vo.ProfileVO" />
+	<typeAlias alias="UserVO" type="com.mystudy.vo.UserVO" />
+	<typeAlias alias="GuestBookVO" type="com.mystudy.vo.GuestBookVO" />
+	<typeAlias alias="GuestBookViewVO" type="com.mystudy.vo.GuestBookViewVO" />
+	<typeAlias alias="FriendVO" type="com.mystudy.vo.FriendVO" />
+	<typeAlias alias="FriendRequestVO" type="com.mystudy.vo.FriendRequestVO" />
+	<typeAlias alias="FriendCommVO" type="com.mystudy.vo.FriendCommVO" />
+	<typeAlias alias="BoardVO" type="com.mystudy.vo.BoardVO" />
+	<typeAlias alias="BoardCommentVO" type="com.mystudy.vo.BoardCommentVO" />
+	<typeAlias alias="HomeStateVO" type="com.mystudy.vo.HomeStateVO" />
+	<typeAlias alias="PushVO" type="com.mystudy.vo.PushVO" />
+  </typeAliases>
+  
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="oracle.jdbc.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@192.168.18.23:1521:xe"/>
+        <property name="username" value="CYWORLD"/>
+        <property name="password" value="cyworldpw"/>
+      </dataSource>
+    </environment>
+  </environments>
+  
+  <mappers>
+    <mapper resource="com/mystudy/mybatis/P_mapper.xml"/>
+    <mapper resource="com/mystudy/mybatis/I_mapper.xml"/>
+    <mapper resource="com/mystudy/mybatis/U_mapper.xml"/>
+    <mapper resource="com/mystudy/mybatis/B_mapper.xml"/>
+    <mapper resource="com/mystudy/mybatis/G_mapper.xml"/>
+    <mapper resource="com/mystudy/mybatis/F_mapper.xml"/>
+    <mapper resource="com/mystudy/mybatis/B_C_mapper.xml"/>
+    <mapper resource="com/mystudy/mybatis/Push_mapper.xml"/>
+    <mapper resource="com/mystudy/mybatis/HomeStateMapper.xml"/>
+  </mappers>
+  
+</configuration>

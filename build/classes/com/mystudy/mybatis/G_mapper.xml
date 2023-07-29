@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="guest"> <!-- 루트태그 -->
+
+	<!-- 전체 게시글 갯수 조회 -->
+	<select id="totalCount" resultType="int" parameterType="int">
+	
+		SELECT COUNT(*) AS CNT FROM GUESTBOOK WHERE USER_CODE = #{visitHost }
+		
+	</select>
+	
+	<select id="pageList" resultType="GuestBookViewVO" parameterType="map">
+		
+		SELECT *
+		FROM ( SELECT ROWNUM AS R_NUM, ORI.* FROM
+					(	SELECT G.GUEST_CODE, G.WRITER_CODE, (SELECT NAME FROM USERS WHERE USER_CODE = G.WRITER_CODE) AS NAME, G.CONTENT, G.REGDATE, 
+			   			(  SELECT SYS_FILENAME FROM PROFILE WHERE USER_CODE = U.USER_CODE AND REGDATE = (SELECT MAX(REGDATE) FROM PROFILE WHERE USER_CODE = U.USER_CODE)   ) SYS_FILENAME
+			       FROM GUESTBOOK G INNER JOIN USERS U
+			       ON G.USER_CODE = U.USER_CODE
+			       WHERE U.USER_CODE = #{visitHost }
+			       ORDER BY REGDATE DESC 
+        ) ORI
+         ORDER BY R_NUM    
+ 		 	)            
+		WHERE R_NUM BETWEEN #{begin } AND #{end }
+		
+	</select>
+
+	<select id="selectAll" parameterType="int" resultType="GuestBookViewVO">
+		
+		SELECT ROWNUM, ORI.* FROM
+		(	SELECT G.GUEST_CODE, G.WRITER_CODE, U.NAME, G.CONTENT, G.REGDATE, 
+	    			(  SELECT SYS_FILENAME FROM PROFILE WHERE USER_CODE = U.USER_CODE AND REGDATE = (SELECT MAX(REGDATE) FROM PROFILE WHERE USER_CODE = U.USER_CODE)   ) SYS_FILENAME
+	        FROM GUESTBOOK G INNER JOIN USERS U
+	        ON G.WRITER_CODE = U.USER_CODE
+	        WHERE U.USER_CODE = #{userCode }
+	        ORDER BY REGDATE DESC
+        ) ORI
+        
+				
+	</select>
+	
+	
+	<insert id="insert" parameterType="GuestBookVO">
+		INSERT INTO GUESTBOOK VALUES(
+			(SELECT NVL(MAX(GUEST_CODE), 0) + 1 FROM GUESTBOOK), #{userCode }, #{writerCode }, #{content }, SYSDATE
+		)
+		 
+	</insert>
+	
+	<update id="updateAuthority" parameterType="Map">
+		UPDATE USERS SET GUEST_AUTHORITY = #{authority } 
+		WHERE USER_CODE = #{userCode }
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		DELETE FROM GUESTBOOK WHERE GUEST_CODE = #{guestCode }
+	</delete>
+
+</mapper>

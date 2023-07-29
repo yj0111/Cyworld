@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="push"> <!-- 루트태그 -->
+	
+	<select id="pushList" resultType="PushVO" parameterType="int">
+		SELECT * FROM PUSH WHERE USER_CODE1 = #{userCode } ORDER BY REGDATE DESC
+	</select>
+	
+	<select id="newPushCheck" resultType="int" parameterType="int">
+		SELECT COUNT(PUSH_CODE) FROM PUSH WHERE USER_CODE1 = #{userCode }
+	</select>
+	
+	<insert id="insertFriendReject" parameterType="map">
+		INSERT INTO PUSH (PUSH_CODE, USER_CODE1, USER_CODE2, CONTENT) VALUES
+			(	PUSH_SEQ.NEXTVAL, #{userCode1 }, #{userCode2 }, #{content }
+			)
+	</insert>
+	
+	<insert id="insertFriendAceept" parameterType="map">
+		INSERT INTO PUSH (PUSH_CODE, USER_CODE1, USER_CODE2, CONTENT) VALUES
+			(	PUSH_SEQ.NEXTVAL, #{userCode1 }, #{userCode2 }, #{content }
+			)
+	</insert>
+	
+	
+	
+</mapper>

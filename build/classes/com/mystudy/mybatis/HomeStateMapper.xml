@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="homeState"> <!-- 루트태그 -->
+	
+	<!-- 가입시 미니홈피상태 기본값입력 -->
+	<insert id="insert" parameterType="HomeStateVO">
+		INSERT INTO HOME_STATE 
+		VALUES (#{userCode}, #{homeName }, #{today}, #{total}, SYSDATE)
+	</insert>
+		
+	<!-- 현재 미니홈피 상태 -->	
+	<select id="now" parameterType="int" resultType="HomeStateVO">
+		SELECT * 
+		FROM HOME_STATE 
+		WHERE USER_CODE = #{userCode}
+	</select>
+	
+	<!-- 미니홈피 제목변경시 -->
+	<update id="updateHomeName" parameterType="map">
+		UPDATE HOME_STATE
+		SET HOME_NAME = #{homeName}
+		WHERE USER_CODE = #{userCode}
+	</update>	
+
+	<!-- 방문시 마다 투데이 변경 -->
+	<update id="updateToday" parameterType="int">
+		UPDATE HOME_STATE 
+ 		SET TODAY = (SELECT NVL((SELECT MAX(TODAY) FROM HOME_STATE), 0) + 1  
+ 			FROM HOME_STATE WHERE USER_CODE = #{userCode})
+ 		WHERE USER_CODE = #{userCode}
+	</update>	
+	
+	<!-- 방문시 마다 total 변경 -->
+	<update id="updateTotal" parameterType="map">
+		UPDATE HOME_STATE
+		SET TOTAL = #{total}
+		WHERE USER_CODE = #{userCode}
+	</update>	
+</mapper>

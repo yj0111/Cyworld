@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="boardcomment">
+	
+	<!-- 게시글별 댓글 조회 -->
+	<select id="commentList" resultType="com.mystudy.vo.BoardCommentVO"
+			parameterType="int">
+	SELECT COM_CODE,POST_CODE,USER_CODE,NAME,CONTENT,REGDATE
+	FROM BOARD_COMMENT
+	WHERE POST_CODE = #{postCode}
+	ORDER BY COM_CODE DESC
+	</select>
+
+	<!-- 댓글 입력 -->
+	<insert id="insert" parameterType="BoardCommentVO">
+	INSERT INTO BOARD_COMMENT
+	        (COM_CODE,POST_CODE,USER_CODE,NAME,CONTENT,REGDATE) 
+	        VALUES (NVL((SELECT MAX(COM_CODE) FROM BOARD_COMMENT),0) + 1 ,#{postCode },#{userCode },#{name },#{content } ,SYSDATE)		
+	</insert>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="delete" parameterType="int">
+		DELETE FROM BOARD_COMMENT WHERE COM_CODE = #{comCode}
+	</delete>
+	
+	
+	<!-- 댓글 1개 조회 -->
+	<select id="one" parameterType="int" resultType="BoardVO">
+		SELECT COM_CODE,POST_CODE,USER_CODE,NAME,CONTENT,REGDATE
+        FROM BOARD_COMMENT
+        WHERE COM_CODE = #{comCode}
+        
+	</select>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user"> <!-- 루트태그 -->
+
+	<select id="selectOne" parameterType="String" resultType="UserVO">
+		SELECT * FROM USERS WHERE ID = #{id }
+	</select>
+	
+	<select id="selectOneByCode" parameterType="int" resultType="UserVO">
+		SELECT * FROM USERS WHERE USER_CODE = #{userCode }
+	</select>
+	
+	<!-- 회원 가입 -->
+	<insert id="insert" parameterType="UserVO">
+		INSERT INTO USERS
+		       (USER_CODE,ID, NAME, PASSWORD, PHONE, EMAIL,BIRTH, GENDER)
+		VALUES (USERS_SEQ.NEXTVAL,#{id}, #{name}, #{password} ,#{phone}, #{email},#{birth}, #{gender })
+	</insert>
+	
+	<!-- 아이디 찾기 -->
+	<select id="findId" parameterType="String" resultType="UserVO">
+	SELECT * 
+	FROM USERS 
+	WHERE PHONE = #{phone}
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="findPw" parameterType="String" resultType="UserVO">
+	SELECT * 
+	FROM USERS 
+	WHERE PHONE = #{phone}
+	</select>
+	
+   
+  <!-- 회원 정보 수정 -->
+   <update id="modify" parameterType="UserVO">
+  		UPDATE USERS
+	   	SET PASSWORD = #{password},
+	       PHONE = #{phone}
+	 	WHERE USER_CODE = #{userCode}
+   </update>
+   
+  	<!-- 회원 탈퇴 -->
+   <delete id="leave" parameterType="int">
+      DELETE FROM USERS WHERE USER_CODE = #{userCode}
+   </delete>
+
+</mapper>
